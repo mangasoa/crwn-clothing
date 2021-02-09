@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route , Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
 import {createStructuredSelector } from 'reselect';
@@ -17,37 +17,12 @@ import { selectCurrentUser } from './redux/user/user.selectors';
 import { checkUserSession } from './redux/user/user.actions';
 
 
-class App extends React.Component {
+const App = ({ checkUserSession, currentUser }) => {
 
-  unsubscribeFromAuth = null;
-
-  componentDidMount(){
-    const { checkUserSession } = this.props;
-    checkUserSession();
-    //const { setCurrentUser} = this.props;
-    // this.unsubscribeFromAuth = auth.onAuthStateChanged( async userAuth => {
-    //   if(userAuth){
-    //     const userRef = await createUserProfileDocument(userAuth);
-
-    //     userRef.onSnapshot(snapShot => {
-    //         //console.log(snapShot);
-    //         setCurrentUser({
-              
-    //           id: snapShot.id,
-    //           ...snapShot.data()  
-    //         });
-    //     });
-        
-    //   }
-    //   setCurrentUser(userAuth);
-    //   //addCollectionAndDocuments('collections', collectionsArray.map(({ title, items}) => ({ title, items })));
-    //});
-  }
-  componentWillUnmount(){
-    this.unsubscribeFromAuth();
-  }
-
-  render(){
+  useEffect(() => {
+    checkUserSession()
+  },[checkUserSession]);
+  
     return (
       <div>
         <Header/>
@@ -59,11 +34,7 @@ class App extends React.Component {
             exact
             path='/signin'
             render={() =>
-              this.props.currentUser ? (
-                <Redirect to='/' />
-              ) : (
-                <SignInAndSignUpPage />
-              )
+              currentUser ? ( <Redirect to='/' /> ) : ( <SignInAndSignUpPage /> )
             }
           />
         </Switch> 
@@ -71,7 +42,6 @@ class App extends React.Component {
     );
   }
   
-}
 const mapStateToProps = createStructuredSelector ({
   currentUser: selectCurrentUser,
   //collectionsArray: selectCollectionsForPreview
